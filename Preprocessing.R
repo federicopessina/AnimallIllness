@@ -36,12 +36,50 @@ pairs(dataset_numeric[,6:8], pch = 19,
       lower.panel = NULL,
       na.action = na.omit)
 
+
 ##########################################################################
 
 # pca
 
+library(tidyverse)
+
+## remove not informative fields
+dataset_pca = dataset_raw %>%
+  select(-Id) %>%  
+  select(-c(longitude, latitude))     # redundant information
 
 
+dataset_pca = dataset_pca %>% 
+  select_if(is.numeric)  
+
+dataset_pca = dataset_pca %>% select(-starts_with("human"))
+
+
+## calculate principal components
+results = prcomp(x = na.omit(dataset_pca), # data frame for pca
+                 scale = TRUE,             # to have mean = 0 and SD = 1 before calculating
+                 )
+
+## reverse the signs
+results$rotation = -1*results$rotation
+
+results$rotation
+
+biplot(results, scale = 1)                 # plot biplot of pca
+
+results$sdev^2 / sum(results$sdev^2)       #calculate total variance explained by each principal component
+
+## calculate total variance explained by each principal component
+
+var_explained = results$sdev^2 / sum(results$sdev^2)
+
+## create scree plot
+qplot(c(1:5), var_explained) + 
+  geom_line() + 
+  xlab("Principal Component") + 
+  ylab("Variance Explained") +
+  ggtitle("Scree Plot") +
+  ylim(0, 1)
 
 
 ##########################################################################
