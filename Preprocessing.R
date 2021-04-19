@@ -20,8 +20,6 @@ dataset_numeric = dataset_clean %>%
   select_if(is.numeric)               # select remaining numeric columns
 
 
-
-
 ##########################################################################
 
 # explorative analysis
@@ -35,6 +33,15 @@ pairs(dataset_numeric[,1:5], pch = 19,
 pairs(dataset_numeric[,6:8], pch = 19,
       lower.panel = NULL,
       na.action = na.omit)
+
+##########################################################################
+
+## linear regression and significance test
+
+linear_model.sumAtRisksumDestroyed <- lm(formula = sumAtRisk ~ sumDestroyed, 
+                                         data = dataset_numeric,
+                                         na.action = na.omit)
+summary(linear_model.sumAtRisksumDestroyed)
 
 
 ##########################################################################
@@ -80,6 +87,13 @@ qplot(c(1:5), var_explained) +
   ylab("Variance Explained") +
   ggtitle("Scree Plot") +
   ylim(0, 1)
+
+
+library(devtools)
+#install_github("vqv/ggbiplot")
+require(ggbiplot)
+
+summary(results)
 
 
 ##########################################################################
